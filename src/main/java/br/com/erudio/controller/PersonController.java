@@ -1,16 +1,12 @@
 package br.com.erudio.controller;
 
-import br.com.erudio.Person;
-import br.com.erudio.exceptions.UnsupportedMathOperationException;
+import br.com.erudio.model.Person;
 import br.com.erudio.services.PersonSevices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static br.com.erudio.converters.NumberConverter.convetToDouble;
-import static br.com.erudio.converters.NumberConverter.isNumeric;
 
 @RestController
 @RequestMapping("/person")

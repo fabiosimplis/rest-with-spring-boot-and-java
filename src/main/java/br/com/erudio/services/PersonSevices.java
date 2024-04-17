@@ -1,6 +1,6 @@
 package br.com.erudio.services;
 
-import br.com.erudio.Person;
+import br.com.erudio.model.Person;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
