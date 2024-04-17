@@ -1,4 +1,4 @@
-package br.com.erudio;
+package br.com.erudio.controller;
 
 import br.com.erudio.Math.SimpleMath;
 import br.com.erudio.exceptions.UnsupportedMathOperationException;
