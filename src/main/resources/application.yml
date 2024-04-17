@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    dbcp2:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/rest_with_spring_boot_udemy?useTime=true&serverTimezone=UTC
+      username: root
+      password: MKir@211200
+  jpa:
+    hibernate:
+      ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQL8Dialect
+        show-sql: false
