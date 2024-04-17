@@ -1,7 +1,7 @@
 package br.com.erudio.controller;
 
 import br.com.erudio.Math.SimpleMath;
-import br.com.erudio.exceptions.UnsupportedMathOperationException;
+import br.com.erudio.exceptions.ResourceNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,7 +23,7 @@ public class MatchController {
     ) throws Exception {
 
         if (!isNumeric(numberOne) || !isNumeric(numberTwo)){
-            throw new UnsupportedMathOperationException("Please set a numeric number");
+            throw new ResourceNotFoundException("Please set a numeric number");
         }
 
         return math.sum(convetToDouble(numberOne), convetToDouble(numberTwo));
@@ -36,7 +36,7 @@ public class MatchController {
     ) throws Exception {
 
         if (!isNumeric(numberOne) || !isNumeric(numberTwo)){
-            throw new UnsupportedMathOperationException("Please set a numeric number");
+            throw new ResourceNotFoundException("Please set a numeric number");
         }
 
         return math.subtraction(convetToDouble(numberOne), convetToDouble(numberTwo));
@@ -49,7 +49,7 @@ public class MatchController {
     ) throws Exception {
 
         if (!isNumeric(numberOne) || !isNumeric(numberTwo)){
-            throw new UnsupportedMathOperationException("Please set a numeric number");
+            throw new ResourceNotFoundException("Please set a numeric number");
         }
 
         return math.multiply(convetToDouble(numberOne), convetToDouble(numberTwo));
@@ -62,12 +62,12 @@ public class MatchController {
     ) throws Exception {
 
         if (!isNumeric(numberOne) || !isNumeric(numberTwo)){
-            throw new UnsupportedMathOperationException("Please set a numeric number");
+            throw new ResourceNotFoundException("Please set a numeric number");
         }
 
         Double number2 = convetToDouble(numberTwo);
         if (number2 == 0D)
-            throw new UnsupportedMathOperationException("Please set a numeric number greater than 0");
+            throw new ResourceNotFoundException("Please set a numeric number greater than 0");
 
         return math.division(convetToDouble(numberOne), convetToDouble(numberTwo));
     }
@@ -79,7 +79,7 @@ public class MatchController {
     ) throws Exception {
 
         if (!isNumeric(numberOne) || !isNumeric(numberTwo)){
-            throw new UnsupportedMathOperationException("Please set a numeric number");
+            throw new ResourceNotFoundException("Please set a numeric number");
         }
 
         return math.average(convetToDouble(numberOne), convetToDouble(numberTwo));
@@ -91,7 +91,7 @@ public class MatchController {
     ) throws Exception {
 
         if (!isNumeric(number)){
-            throw new UnsupportedMathOperationException("Please set a numeric number");
+            throw new ResourceNotFoundException("Please set a numeric number");
         }
 
         return math.squareRoot(convetToDouble(number));
