@@ -37,12 +37,12 @@ public class PersonController {
         return personSevices.create(person);
     }
 
-    @PostMapping( value = "/v2",
+    /*@PostMapping( value = "/v2",
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML})
     public PersonVOV2 createV2(@RequestBody PersonVOV2 person) {
         return personSevices.createV2(person);
-    }
+    }*/
 
     @PutMapping(consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML})
