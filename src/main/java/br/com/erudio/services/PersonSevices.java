@@ -27,6 +27,19 @@ public class PersonSevices {
     @Autowired
     private PersonMapper personMapper;
 
+    public List<PersonVO> findAll(){
+        logger.info("Finding a list of person");
+
+        List<PersonVO> voList = DozerMapper.parseListObjects(personRepository.findAll(), PersonVO.class);
+
+//        for (PersonVO pVO: voList)
+//            pVO.add(linkTo(methodOn(PersonController.class).findById(pVO.getKey())).withSelfRel());
+
+        voList.stream().forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+
+        return voList;
+    }
+
     public PersonVO findById(Long id){
         logger.info("Finding one person");
         Person person = personRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No person found for this ID!"));
@@ -36,18 +49,12 @@ public class PersonSevices {
         return vo;
     }
 
-    public List<PersonVO> findAll(){
-        logger.info("Finding a list of person");
-        return DozerMapper.parseListObjects(personRepository.findAll(), PersonVO.class);
-
-    }
-
     public PersonVO create(PersonVO personVo){
         logger.info("Creating a list of person");
         var person = DozerMapper.parseObject(personVo, Person.class);
-
-
-        return DozerMapper.parseObject(personRepository.save(person), PersonVO.class);
+        var vo = DozerMapper.parseObject(personRepository.save(person), PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
+        return vo;
     }
 
     public PersonVOV2 createV2(PersonVOV2 personVo){
@@ -55,7 +62,6 @@ public class PersonSevices {
 
         var entity = personMapper.convertVoToEntity(personVo);
         var vo = personMapper.convertEntityToVo(personRepository.save(entity));
-
 
         return vo;
     }
@@ -70,7 +76,9 @@ public class PersonSevices {
         entity.setAddress(person.getAddress());
         entity.setGender(person.getGender());
 
-        return DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
+        var vo = DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
+        return vo;
     }
 
     public void delete(Long id){
