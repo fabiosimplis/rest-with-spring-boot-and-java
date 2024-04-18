@@ -36,7 +36,7 @@ public class PersonSevices {
 //        for (PersonVO pVO: voList)
 //            pVO.add(linkTo(methodOn(PersonController.class).findById(pVO.getKey())).withSelfRel());
 
-        voList.stream().forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+        voList.forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
         return voList;
     }
@@ -64,9 +64,8 @@ public class PersonSevices {
         logger.info("Creating a list of person V2");
 
         var entity = personMapper.convertVoToEntity(personVo);
-        var vo = personMapper.convertEntityToVo(personRepository.save(entity));
 
-        return vo;
+        return personMapper.convertEntityToVo(personRepository.save(entity));
     }
 
     public PersonVO update(PersonVO personVO){
