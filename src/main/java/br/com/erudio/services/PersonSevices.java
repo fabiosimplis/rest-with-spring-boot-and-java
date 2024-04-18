@@ -1,5 +1,6 @@
 package br.com.erudio.services;
 
+import br.com.erudio.controller.PersonController;
 import br.com.erudio.data.vo.v1.PersonVO;
 import br.com.erudio.data.vo.v2.PersonVOV2;
 import br.com.erudio.exceptions.ResourceNotFoundException;
@@ -8,6 +9,8 @@ import br.com.erudio.mapper.custom.PersonMapper;
 import br.com.erudio.model.Person;
 import br.com.erudio.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +30,10 @@ public class PersonSevices {
     public PersonVO findById(Long id){
         logger.info("Finding one person");
         Person person = personRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No person found for this ID!"));
-        return DozerMapper.parseObject(person, PersonVO.class);
+        PersonVO vo = DozerMapper.parseObject(person, PersonVO.class);
+        //criando um endereço para ele mesmo
+        vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+        return vo;
     }
 
     public List<PersonVO> findAll(){
@@ -57,7 +63,7 @@ public class PersonSevices {
     public PersonVO update(PersonVO person){
         logger.info("Updating a list of person");
 
-        Person entity = personRepository.findById(person.getId())
+        Person entity = personRepository.findById(person.getKey())
                 .orElseThrow(() -> new ResourceNotFoundException("No person found for this ID!"));
         entity.setFirstName(person.getFirstName());
         entity.setLastName(person.getLastName());
