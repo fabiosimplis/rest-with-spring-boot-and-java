@@ -84,7 +84,8 @@ public class PersonServicesTest {
 
     @Test
     void testCreateWithNullPerson() {
-        Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> {
+        Exception exception;
+        exception = assertThrows(RequiredObjectIsNullException.class, () -> {
             services.create(null);
         });
 
@@ -108,9 +109,7 @@ public class PersonServicesTest {
 
     @Test
     void testUpdateWithNullPerson() {
-        Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> {
-            services.create(null);
-        });
+        Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> services.create(null));
 
         String expectedMessage = "It's not allowed to persist a null object!";
         String actualMessage = exception.getMessage();
