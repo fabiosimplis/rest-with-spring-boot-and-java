@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.will;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -59,18 +61,18 @@ public class BookServicesTest {
 
     }
 
+
     @Test
     void testCreate() {
         Book entity = input.mockEntity(1);
         entity.setId(1L);
 
-        Book persisted = entity;
-        persisted.setId(1L);
+        entity.setId(1L);
 
         BookVO vo = input.mockVO(1);
         vo.setKey(1L);
 
-        when(repository.save(entity)).thenReturn(persisted);
+        when(repository.save(entity)).thenReturn(entity);
 
         var result = service.create(vo);
 

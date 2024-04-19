@@ -48,8 +48,8 @@ public class BookSevices {
         logger.info("Creating a list of book");
         if (bookVO == null)
             throw new RequiredObjectIsNullException();
-        var book = DozerMapper.parseObject(bookVO, Book.class);
-        var vo = DozerMapper.parseObject(bookRepository.save(book), BookVO.class);
+        Book book = DozerMapper.parseObject(bookVO, Book.class);
+        BookVO vo = DozerMapper.parseObject(bookRepository.save(book), BookVO.class);
         vo.add(linkTo(methodOn(BookController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
