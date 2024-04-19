@@ -59,6 +59,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                         .extract()
                         .body()
                         .asString();
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
 
         PersonVO createdPerson = objectMapper.readValue(content, PersonVO.class);
         person = createdPerson;
