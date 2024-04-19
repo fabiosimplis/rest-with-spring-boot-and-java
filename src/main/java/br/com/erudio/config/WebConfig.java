@@ -17,11 +17,11 @@ public class WebConfig implements WebMvcConfigurer {
     private static final MediaType MEDIA_TYPE_APPLICATION_YAML = MediaType.valueOf("application/x-yaml");
 
     @Value("${cors.originPatterns:default}")
-    private String corsOriginPatters = "";
+    private String corsOriginPatterns = "";
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        var allowedOrigins = corsOriginPatters.split(",");
+        var allowedOrigins = corsOriginPatterns.split(",");
         registry.addMapping("/**")//Todas as rotas da nossa API
                 //.allowedMethods("GET", "POST", "PUT") //permite por verbos
                 .allowedMethods("*")
