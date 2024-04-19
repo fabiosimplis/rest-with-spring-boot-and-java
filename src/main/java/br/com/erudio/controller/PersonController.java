@@ -47,6 +47,7 @@ public class PersonController {
         return personSevices.findAll();
     }
 
+    @CrossOrigin(origins = "http://localhost:8080")
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML})
     @Operation(summary = "Finds a Person", description = "Finds a Person",
             tags = {"People"},
@@ -65,6 +66,7 @@ public class PersonController {
         return personSevices.findById(id);
     }
 
+    @CrossOrigin(origins = {"http://localhost:8080", "https://erudio.com.br"})
     @PostMapping(
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML})
@@ -84,12 +86,6 @@ public class PersonController {
         return personSevices.create(person);
     }
 
-    /*@PostMapping( value = "/v2",
-            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML},
-            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML})
-    public PersonVOV2 createV2(@RequestBody PersonVOV2 person) {
-        return personSevices.createV2(person);
-    }*/
 
     @PutMapping(consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML})
