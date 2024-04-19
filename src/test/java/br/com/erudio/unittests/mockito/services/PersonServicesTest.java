@@ -97,7 +97,7 @@ public class PersonServicesTest {
     }
 
     @Test
-    void testUpdate() {
+    void testDelete() {
         Person entity = input.mockEntity(1);
 
         entity.setId(1L);
@@ -119,7 +119,7 @@ public class PersonServicesTest {
     }
 
     @Test
-    void testDelete() {
+    void testUpdate() {
         Person entity = input.mockEntity(1);
         Person persisted = entity;
 

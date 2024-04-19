@@ -1,7 +1,6 @@
 package br.com.erudio.services;
 
 import br.com.erudio.controller.BookController;
-import br.com.erudio.controller.PersonController;
 import br.com.erudio.data.vo.v1.BookVO;
 import br.com.erudio.exceptions.RequiredObjectIsNullException;
 import br.com.erudio.exceptions.ResourceNotFoundException;
@@ -38,10 +37,8 @@ public class BookSevices {
 
     public BookVO findById(Long id){
         logger.info("Finding one book");
-        Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No person found for this ID!"));
-        System.out.println("\n Book: " + book.getLaunchDate());
+        Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No book found for this ID!"));
         BookVO vo = DozerMapper.parseObject(book, BookVO.class);
-        System.out.println("\n Book: " + vo.getLaunchDate());
         //criando um endereço para ele mesmo
         vo.add(linkTo(methodOn(BookController.class).findById(id)).withSelfRel());
         return vo;
@@ -51,9 +48,9 @@ public class BookSevices {
         logger.info("Creating a list of book");
         if (bookVO == null)
             throw new RequiredObjectIsNullException();
-        var person = DozerMapper.parseObject(bookVO, Book.class);
-        var vo = DozerMapper.parseObject(bookRepository.save(person), BookVO.class);
-        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
+        var book = DozerMapper.parseObject(bookVO, Book.class);
+        var vo = DozerMapper.parseObject(bookRepository.save(book), BookVO.class);
+        vo.add(linkTo(methodOn(BookController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
 
@@ -63,21 +60,21 @@ public class BookSevices {
             throw new RequiredObjectIsNullException();
 
         Book entity = bookRepository.findById(bookVO.getKey())
-                .orElseThrow(() -> new ResourceNotFoundException("No person found for this ID!"));
+                .orElseThrow(() -> new ResourceNotFoundException("No book found for this ID!"));
         entity.setAuthor(bookVO.getAuthor());
         entity.setLaunchDate(bookVO.getLaunchDate());
         entity.setPrice(bookVO.getPrice());
         entity.setTitle(bookVO.getTitle());
 
         var vo = DozerMapper.parseObject(bookRepository.save(entity), BookVO.class);
-        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
+        vo.add(linkTo(methodOn(BookController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
 
     public void delete(Long id){
         logger.info("Delete a list of book");
         Book entity = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No person found for this ID!"));
+                .orElseThrow(() -> new ResourceNotFoundException("No book found for this ID!"));
         bookRepository.delete(entity);
     }
 }
