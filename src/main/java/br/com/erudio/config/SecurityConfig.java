@@ -30,7 +30,7 @@ public class SecurityConfig {
     //Mostra ao spring como vai encriptar as senhas
     // para comparar com a que está no banco
     @Bean
-    private PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder(){
         Map<String, PasswordEncoder> encoders = new HashMap<>();
         //Poderiamos usar o bcrypt, porem esta com problemas de performance
         // então descartamos o uso
