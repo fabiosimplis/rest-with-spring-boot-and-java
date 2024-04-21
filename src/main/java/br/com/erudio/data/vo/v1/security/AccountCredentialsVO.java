@@ -7,20 +7,20 @@ public class AccountCredentialsVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String usename;
+    private String username;
     private String password;
 
-    public AccountCredentialsVO(String usename, String password) {
-        this.usename = usename;
+    public AccountCredentialsVO(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
-    public String getUsename() {
-        return usename;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUsename(String usename) {
-        this.usename = usename;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -36,11 +36,11 @@ public class AccountCredentialsVO implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AccountCredentialsVO that = (AccountCredentialsVO) o;
-        return Objects.equals(usename, that.usename) && Objects.equals(password, that.password);
+        return Objects.equals(username, that.username) && Objects.equals(password, that.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(usename, password);
+        return Objects.hash(username, password);
     }
 }

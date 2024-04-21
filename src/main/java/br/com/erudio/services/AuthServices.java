@@ -17,6 +17,7 @@ public class AuthServices {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Autowired
     private JwtTokenProvider tokenProvider;
 
@@ -26,9 +27,12 @@ public class AuthServices {
     @SuppressWarnings("rawtypes")
     public ResponseEntity signin(AccountCredentialsVO data){
         try{
-            var username = data.getUsename();
+            var username = data.getUsername();
             var password = data.getPassword();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
+            var auth = new UsernamePasswordAuthenticationToken(username, password);
+
+            authenticationManager.authenticate(auth);
 
             var user = repository.findByUserName(username);
 

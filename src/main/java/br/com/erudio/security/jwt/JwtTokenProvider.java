@@ -1,7 +1,7 @@
 package br.com.erudio.security.jwt;
 
 import br.com.erudio.data.vo.v1.security.TokenVO;
-import br.com.erudio.exceptions.InvalidJwtAuthenticationxception;
+import br.com.erudio.exceptions.InvalidJwtAuthenticationException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -48,13 +48,13 @@ public class JwtTokenProvider {
     public TokenVO createAccessToken(String username, List<String> roles){
         Date now = new Date();
         Date validity = new Date(now.getTime() + validyInMilliseconds);
-        var accessToken = getRefreshToken(username, roles, now, validity);
+        var accessToken = getAccessToken(username, roles, now, validity);
         var refreshToken = getRefreshToken(username, roles, now);
 
         return new TokenVO(username, true, now, validity, accessToken, refreshToken);
     }
 
-    private String getRefreshToken(String username, List<String> roles, Date now, Date validity){
+    private String getAccessToken(String username, List<String> roles, Date now, Date validity){
         String issuerUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .build().toUriString();//Pega a url do servidor
         return JWT.create()
@@ -95,7 +95,7 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest req){
         String bearerToken = req.getHeader("Authorization");
 
-        //Bearer Token
+        //Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWFuZHJvIiwicm9sZXMiOlsiQURNSU4iLCJNQU5BR0VSIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImV4cCI6MTY1MjcxOTUzOCwiaWF0IjoxNjUyNzE1OTM4fQ.muu8eStsRobqLyrFYLHRiEvOSHAcss4ohSNtmwWTRcY
         if (bearerToken != null && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring("Bearer ".length());
         }
@@ -107,12 +107,11 @@ public class JwtTokenProvider {
         try{
 
             if (decodedJWT.getExpiresAt().before(new Date())){
-
                 return false;
             }
             return true;
         } catch (Exception e) {
-            throw new InvalidJwtAuthenticationxception("Expired or invalid JWT token!");
+            throw new InvalidJwtAuthenticationException("Expired or invalid JWT token!");
         }
 
     }
