@@ -59,7 +59,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                 .as(TokenVO.class).getAccessToken();
 
         specification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZAtion, "Bearer " + accessToken)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken)
                 .setBasePath("/api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))//filtro para logar as requisições
