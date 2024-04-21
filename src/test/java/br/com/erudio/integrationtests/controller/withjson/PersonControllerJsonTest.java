@@ -1,9 +1,9 @@
 package br.com.erudio.integrationtests.controller.withjson;
 
 import br.com.erudio.configs.TestConfigs;
-import br.com.erudio.integationtests.vo.AccountCredentialsVO;
-import br.com.erudio.integationtests.vo.PersonVO;
-import br.com.erudio.integationtests.vo.TokenVO;
+import br.com.erudio.integrationtests.vo.AccountCredentialsVO;
+import br.com.erudio.integrationtests.vo.PersonVO;
+import br.com.erudio.integrationtests.vo.TokenVO;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

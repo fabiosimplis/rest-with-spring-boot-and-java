@@ -27,7 +27,7 @@ public class PersonController {
             MediaType.APPLICATION_XML,
             "application/x-yaml"
             })
-    @Operation(summary = "Finds all Peolpe", description = "Finds all People",
+    @Operation(summary = "Finds all People", description = "Finds all People",
         tags = {"People"},
             responses = {
             @ApiResponse(description = "Success", responseCode = "200",

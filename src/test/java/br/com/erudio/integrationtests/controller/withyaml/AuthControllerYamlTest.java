@@ -2,8 +2,8 @@ package br.com.erudio.integrationtests.controller.withyaml;
 
 
 import br.com.erudio.configs.TestConfigs;
-import br.com.erudio.integationtests.vo.AccountCredentialsVO;
-import br.com.erudio.integationtests.vo.TokenVO;
+import br.com.erudio.integrationtests.vo.AccountCredentialsVO;
+import br.com.erudio.integrationtests.vo.TokenVO;
 import br.com.erudio.integrationtests.controller.withyaml.mapper.YMLMapper;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AuthControlleryamlTest extends AbstractIntegrationTest {
+public class AuthControllerYamlTest extends AbstractIntegrationTest {
 
     private static YMLMapper objectMapper;
     private static TokenVO tokenVO;

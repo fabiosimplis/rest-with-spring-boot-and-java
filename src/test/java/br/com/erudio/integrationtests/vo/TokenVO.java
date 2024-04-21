@@ -1,4 +1,4 @@
-package br.com.erudio.integationtests.vo;
+package br.com.erudio.integrationtests.vo;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 

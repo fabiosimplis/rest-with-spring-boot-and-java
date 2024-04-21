@@ -1,4 +1,4 @@
-package br.com.erudio.integationtests.vo;
+package br.com.erudio.integrationtests.vo;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
