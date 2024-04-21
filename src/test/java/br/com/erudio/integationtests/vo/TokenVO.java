@@ -1,9 +1,12 @@
 package br.com.erudio.integationtests.vo;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+@XmlRootElement
 public class TokenVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -15,9 +18,7 @@ public class TokenVO implements Serializable {
     private String accessToken;
     private String refreshToken;
 
-    public TokenVO(){
-
-    }
+    public TokenVO(){}
 
     public TokenVO(String username, Boolean authenticated, Date created, Date expiration, String accessToken, String refreshToken) {
         this.username = username;

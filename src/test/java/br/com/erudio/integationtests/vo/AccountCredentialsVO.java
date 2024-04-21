@@ -1,14 +1,21 @@
 package br.com.erudio.integationtests.vo;
 
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@XmlRootElement
 public class AccountCredentialsVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private String username;
     private String password;
+
+    public AccountCredentialsVO(){}
 
     public AccountCredentialsVO(String username, String password) {
         this.username = username;
@@ -29,6 +36,15 @@ public class AccountCredentialsVO implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String toYAML() throws Exception {
+
+        YAMLFactory yamlFactory = new YAMLFactory();
+
+        ObjectMapper objectMapper = new ObjectMapper(yamlFactory);
+
+        return objectMapper.writeValueAsString(this);
     }
 
     @Override

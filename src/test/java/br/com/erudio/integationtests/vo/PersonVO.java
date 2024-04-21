@@ -1,11 +1,13 @@
 package br.com.erudio.integationtests.vo;
 
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@XmlRootElement
 public class PersonVO extends RepresentationModel<PersonVO> implements Serializable{
 
     private static final long serialVersioUID = 1L;
