@@ -1,6 +1,7 @@
-package br.com.erudio.integationtests.vo;
+package br.com.erudio.integrationtests.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -21,6 +22,8 @@ public class PersonVO extends RepresentationModel<PersonVO> implements Serializa
     private String address;
 
     private String gender;
+    @JsonIgnore
+    private Object links;
 
     public PersonVO(){
     }
