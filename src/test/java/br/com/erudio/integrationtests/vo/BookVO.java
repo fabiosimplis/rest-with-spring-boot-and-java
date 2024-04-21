@@ -1,12 +1,14 @@
 package br.com.erudio.integrationtests.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-
+@XmlRootElement
 public class BookVO extends RepresentationModel<BookVO> implements Serializable {
 
     private static final long serialVersioUID = 1L;
@@ -20,6 +22,8 @@ public class BookVO extends RepresentationModel<BookVO> implements Serializable 
     private Double price;
 
     private String title;
+    @JsonIgnore
+    private Object links;
 
     public BookVO(){}
 

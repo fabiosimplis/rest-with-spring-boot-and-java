@@ -1,53 +1,45 @@
 package br.com.erudio.integrationtests.controller.withxml;
 
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.boot.test.context.SpringBootTest;
-
+import br.com.erudio.configs.TestConfigs;
+import br.com.erudio.data.vo.v1.security.TokenVO;
+import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
+import br.com.erudio.integrationtests.vo.AccountCredentialsVO;
+import br.com.erudio.integrationtests.vo.BookVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
-import br.com.erudio.configs.TestConfigs;
-import br.com.erudio.data.vo.v1.security.TokenVO;
-import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
-import br.com.erudio.integrationtests.vo.AccountCredentialsVO;
-import br.com.erudio.integrationtests.vo.PersonVO;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
+import org.junit.jupiter.api.*;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Date;
+import java.util.List;
+
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@TestMethodOrder(OrderAnnotation.class)
-public class PersonControllerXmlTest extends AbstractIntegrationTest {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class BookControllerXmlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static XmlMapper objectMapper;
 
-    private static PersonVO person;
+    private static BookVO book;
 
     @BeforeAll
     public static void setup(){
         objectMapper = new XmlMapper();
         //Configura comportamento ao receber o JSON para ignorar campos HATEOAS
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        //objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        person = new PersonVO();
+        book = new BookVO();
     }
 
     @Test
@@ -71,7 +63,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
 
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken)
-                .setBasePath("/api/person/v1")
+                .setBasePath("/api/book/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))//filtro para logar as requisições
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))//filtro para logar as respostas
@@ -82,12 +74,12 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
     @Test
     @Order(1)
     public void testCreate() throws JsonMappingException, JsonProcessingException {
-        mockPerson();
+        mockBook();
 
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_XML)
                 .accept(TestConfigs.CONTENT_TYPE_XML)
-                .body(person)
+                .body(book)
                 .when()
                 .post()
                 .then()
@@ -98,33 +90,33 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
 
-        PersonVO persistePerson = objectMapper.readValue(content, PersonVO.class);
-        person = persistePerson;
+        BookVO persisteBook = objectMapper.readValue(content, BookVO.class);
+        book = persisteBook;
 
-        assertNotNull(persistePerson);
-        assertNotNull(persistePerson.getId());
-        assertNotNull(persistePerson.getFirstName());
-        assertNotNull(persistePerson.getLastName());
-        assertNotNull(persistePerson.getAddress());
-        assertNotNull(persistePerson.getGender());
+        assertNotNull(persisteBook);
+        assertNotNull(persisteBook.getId());
+        assertNotNull(persisteBook.getAuthor());
+        assertNotNull(persisteBook.getLaunchDate());
+        assertNotNull(persisteBook.getTitle());
+        assertNotNull(persisteBook.getPrice());
 
-        assertTrue(persistePerson.getId() > 0);
+        assertTrue(persisteBook.getId() > 0);
 
-        assertEquals("Nelson", persistePerson.getFirstName());
-        assertEquals("Piquet", persistePerson.getLastName());
-        assertEquals("Brasilia - DF Brasil", persistePerson.getAddress());
-        assertEquals("Male", persistePerson.getGender());
+        assertEquals("Joshua Bloch", persisteBook.getAuthor());
+        assertEquals("Java Efetivo", persisteBook.getTitle());
+        assertEquals(80D, persisteBook.getPrice());
+
     }
 
     @Test
     @Order(2)
     public void testUpdate() throws JsonMappingException, JsonProcessingException {
-        person.setLastName("Piquet Souto");
+        book.setPrice(86D);
 
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_XML)
                 .accept(TestConfigs.CONTENT_TYPE_XML)
-                .body(person)
+                .body(book)
                 .when()
                 .put()
                 .then()
@@ -135,33 +127,32 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
 
-        PersonVO persistePerson = objectMapper.readValue(content, PersonVO.class);
-        person = persistePerson;
+        BookVO persisteBook = objectMapper.readValue(content, BookVO.class);
+        book = persisteBook;
 
-        assertNotNull(persistePerson);
-        assertNotNull(persistePerson.getId());
-        assertNotNull(persistePerson.getFirstName());
-        assertNotNull(persistePerson.getLastName());
-        assertNotNull(persistePerson.getAddress());
-        assertNotNull(persistePerson.getGender());
+        assertNotNull(persisteBook);
+        assertNotNull(persisteBook.getId());
+        assertNotNull(persisteBook.getAuthor());
+        assertNotNull(persisteBook.getLaunchDate());
+        assertNotNull(persisteBook.getTitle());
+        assertNotNull(persisteBook.getPrice());
 
-        assertEquals(person.getId(), persistePerson.getId());
+        assertEquals(book.getId(), persisteBook.getId());
 
-        assertEquals("Nelson", persistePerson.getFirstName());
-        assertEquals("Piquet Souto", persistePerson.getLastName());
-        assertEquals("Brasilia - DF Brasil", persistePerson.getAddress());
-        assertEquals("Male", persistePerson.getGender());
+        assertEquals("Joshua Bloch", persisteBook.getAuthor());
+        assertEquals("Java Efetivo", persisteBook.getTitle());
+        assertEquals(86D, persisteBook.getPrice());
     }
 
     @Test
     @Order(3)
     public void testFindById() throws JsonMappingException, JsonProcessingException {
-        mockPerson();
+        mockBook();
 
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_XML)
                 .accept(TestConfigs.CONTENT_TYPE_XML)
-                .pathParams("id", person.getId())
+                .pathParams("id", book.getId())
                 .when()
                 .get("{id}")
                 .then()
@@ -172,22 +163,21 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
 
-        PersonVO persistePerson = objectMapper.readValue(content, PersonVO.class);
-        person = persistePerson;
+        BookVO persisteBook = objectMapper.readValue(content, BookVO.class);
+        book = persisteBook;
 
-        assertNotNull(persistePerson);
-        assertNotNull(persistePerson.getId());
-        assertNotNull(persistePerson.getFirstName());
-        assertNotNull(persistePerson.getLastName());
-        assertNotNull(persistePerson.getAddress());
-        assertNotNull(persistePerson.getGender());
+        assertNotNull(persisteBook);
+        assertNotNull(persisteBook.getId());
+        assertNotNull(persisteBook.getAuthor());
+        assertNotNull(persisteBook.getLaunchDate());
+        assertNotNull(persisteBook.getTitle());
+        assertNotNull(persisteBook.getPrice());
 
-        assertTrue(persistePerson.getId() > 0);
+        assertTrue(persisteBook.getId() > 0);
 
-        assertEquals("Nelson", persistePerson.getFirstName());
-        assertEquals("Piquet Souto", persistePerson.getLastName());
-        assertEquals("Brasilia - DF Brasil", persistePerson.getAddress());
-        assertEquals("Male", persistePerson.getGender());
+        assertEquals("Joshua Bloch", persisteBook.getAuthor());
+        assertEquals("Java Efetivo", persisteBook.getTitle());
+        assertEquals(86D, persisteBook.getPrice());
     }
 
     @Test
@@ -197,7 +187,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_XML)
                 .accept(TestConfigs.CONTENT_TYPE_XML)
-                .pathParams("id", person.getId())
+                .pathParams("id", book.getId())
                 .when()
                 .delete("{id}")
                 .then()
@@ -222,36 +212,35 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
                 });*/
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
-        List<PersonVO> people = objectMapper.readValue(content, new TypeReference<List<PersonVO>>() {});
-        PersonVO foundPersonOne = people.get(0);
+        List<BookVO> people = objectMapper.readValue(content, new TypeReference<List<BookVO>>() {});
+        BookVO foundBookOne = people.get(0);
 
-        assertNotNull(foundPersonOne.getId());
-        assertNotNull(foundPersonOne.getFirstName());
-        assertNotNull(foundPersonOne.getLastName());
-        assertNotNull(foundPersonOne.getAddress());
-        assertNotNull(foundPersonOne.getGender());
+        assertNotNull(foundBookOne.getId());
+        assertNotNull(foundBookOne.getLaunchDate());
+        assertNotNull(foundBookOne.getPrice());
+        assertNotNull(foundBookOne.getAuthor());
+        assertNotNull(foundBookOne.getTitle());
 
-        assertEquals(1, foundPersonOne.getId());
+        assertEquals(1, foundBookOne.getId());
 
-        assertEquals("Oscar", foundPersonOne.getFirstName());
-        assertEquals("Schmidt", foundPersonOne.getLastName());
-        assertEquals("São Paulo", foundPersonOne.getAddress());
-        assertEquals("Male", foundPersonOne.getGender());
+        assertEquals(49D, foundBookOne.getPrice());
+        assertEquals("Michael C. Feathers", foundBookOne.getAuthor());
+        assertEquals("Working effectively with legacy code", foundBookOne.getTitle());
 
-        PersonVO foundPersonTwo = people.get(2);
+        BookVO foundBookTwo = people.get(3);
 
-        assertNotNull(foundPersonTwo.getId());
-        assertNotNull(foundPersonTwo.getFirstName());
-        assertNotNull(foundPersonTwo.getLastName());
-        assertNotNull(foundPersonTwo.getAddress());
-        assertNotNull(foundPersonTwo.getGender());
+        assertNotNull(foundBookTwo.getId());
+        assertNotNull(foundBookTwo.getTitle());
+        assertNotNull(foundBookTwo.getAuthor());
+        assertNotNull(foundBookTwo.getPrice());
 
-        assertEquals(3, foundPersonTwo.getId());
 
-        assertEquals("Jhon", foundPersonTwo.getFirstName());
-        assertEquals("Wick", foundPersonTwo.getLastName());
-        assertEquals("Nova York", foundPersonTwo.getAddress());
-        assertEquals("Male", foundPersonTwo.getGender());
+        assertEquals(4, foundBookTwo.getId());
+
+        assertEquals("Crockford", foundBookTwo.getAuthor());
+        assertEquals(67D, foundBookTwo.getPrice());
+        assertEquals("JavaScript", foundBookTwo.getTitle());
+
     }
 
     @Test
@@ -259,7 +248,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
     public void testFindAllWithoutToken() throws JsonMappingException, JsonProcessingException {
 
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
-                .setBasePath("/api/person/v1")
+                .setBasePath("/api/book/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))//filtro para logar as requisições
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))//filtro para logar as respostas
@@ -267,19 +256,19 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
 
          given().spec(specificationWithoutToken)
                 .contentType(TestConfigs.CONTENT_TYPE_XML)
-                 .accept(TestConfigs.CONTENT_TYPE_XML)
-                 .when()
-                 .get()
-                 .then()
-                 .statusCode(403);
+                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .when()
+                .get()
+                .then()
+                .statusCode(403);
                 
     }
 
-    private void mockPerson() {
-        person.setFirstName("Nelson");
-        person.setLastName("Piquet");
-        person.setAddress("Brasilia - DF Brasil");
-        person.setGender("Male");
+    private void mockBook() {
+        book.setAuthor("Joshua Bloch");
+        book.setLaunchDate(new Date());
+        book.setTitle("Java Efetivo");
+        book.setPrice(80D);
     }
 
 }
