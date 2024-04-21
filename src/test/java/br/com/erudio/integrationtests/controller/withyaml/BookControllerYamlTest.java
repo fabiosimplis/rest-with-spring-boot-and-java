@@ -4,11 +4,11 @@ import br.com.erudio.configs.TestConfigs;
 import br.com.erudio.integrationtests.controller.withyaml.mapper.YMLMapper;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
 import br.com.erudio.integrationtests.vo.AccountCredentialsVO;
+import br.com.erudio.integrationtests.vo.BookVO;
 import br.com.erudio.integrationtests.vo.PersonVO;
 import br.com.erudio.integrationtests.vo.TokenVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.EncoderConfig;
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static br.com.erudio.configs.TestConfigs.ORIGIN_ERUDIO;
@@ -30,20 +31,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PersonControllerYamlTest extends AbstractIntegrationTest {
+public class BookControllerYamlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static YMLMapper objectMapper;
 
-    private static PersonVO person;
+    private static BookVO book;
 
     @BeforeAll
     public static void setup(){
         objectMapper = new YMLMapper();
         //Configura comportamento ao receber o JSON para ignorar campos HATEOAS
-        //objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-        person = new PersonVO();
+        book = new BookVO();
     }
 
     @Test
@@ -71,7 +70,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
 
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken)
-                .setBasePath("/api/person/v1")
+                .setBasePath("/api/book/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))//filtro para logar as requisições
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))//filtro para logar as respostas
@@ -82,120 +81,116 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
     @Test
     @Order(1)
     public void testCreate() throws JsonMappingException, JsonProcessingException {
-        mockPerson();
+        mockBook();
 
-        PersonVO persistePerson = given().spec(specification)
+        BookVO persisteBook = given().spec(specification)
                 .config(RestAssuredConfig.config()
                         .encoderConfig(EncoderConfig
                                 .encoderConfig()
                                 .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
                 .contentType(TestConfigs.CONTENT_TYPE_YML)
-                .body(person, objectMapper)
+                .body(book, objectMapper)
                 .when()
                 .post()
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(PersonVO.class, objectMapper);
+                .as(BookVO.class, objectMapper);
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
 
-        //PersonVO persistePerson = objectMapper.readValue(content, PersonVO.class);
 
-        person = persistePerson;
+        book = persisteBook;
 
-        assertNotNull(persistePerson);
-        assertNotNull(persistePerson.getId());
-        assertNotNull(persistePerson.getFirstName());
-        assertNotNull(persistePerson.getLastName());
-        assertNotNull(persistePerson.getAddress());
-        assertNotNull(persistePerson.getGender());
+        assertNotNull(persisteBook);
+        assertNotNull(persisteBook.getId());
+        assertNotNull(persisteBook.getAuthor());
+        assertNotNull(persisteBook.getLaunchDate());
+        assertNotNull(persisteBook.getTitle());
+        assertNotNull(persisteBook.getPrice());
 
-        assertTrue(persistePerson.getId() > 0);
+        assertTrue(persisteBook.getId() > 0);
 
-        assertEquals("Nelson", persistePerson.getFirstName());
-        assertEquals("Piquet", persistePerson.getLastName());
-        assertEquals("Brasilia - DF Brasil", persistePerson.getAddress());
-        assertEquals("Male", persistePerson.getGender());
+        assertEquals("Joshua Bloch", persisteBook.getAuthor());
+        assertEquals("Java Efetivo", persisteBook.getTitle());
+        assertEquals(80D, persisteBook.getPrice());
+
     }
 
     @Test
     @Order(2)
     public void testUpdate() throws JsonMappingException, JsonProcessingException {
-        person.setLastName("Piquet Souto");
+        book.setPrice(86D);
 
-        PersonVO persistePerson = given().spec(specification)
+        BookVO persisteBook = given().spec(specification)
                 .config(RestAssuredConfig.config()
                         .encoderConfig(EncoderConfig
                                 .encoderConfig()
                                 .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
                 .contentType(TestConfigs.CONTENT_TYPE_YML)
-                .body(person, objectMapper)
+                .body(book, objectMapper)
                 .when()
                 .put()
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(PersonVO.class, objectMapper);
+                .as(BookVO.class, objectMapper);
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
 
-        person = persistePerson;
+        book = persisteBook;
 
-        assertNotNull(persistePerson);
-        assertNotNull(persistePerson.getId());
-        assertNotNull(persistePerson.getFirstName());
-        assertNotNull(persistePerson.getLastName());
-        assertNotNull(persistePerson.getAddress());
-        assertNotNull(persistePerson.getGender());
+        assertNotNull(persisteBook);
+        assertNotNull(persisteBook.getId());
+        assertNotNull(persisteBook.getAuthor());
+        assertNotNull(persisteBook.getLaunchDate());
+        assertNotNull(persisteBook.getTitle());
+        assertNotNull(persisteBook.getPrice());
 
-        assertEquals(person.getId(), persistePerson.getId());
+        assertEquals(book.getId(), persisteBook.getId());
 
-        assertEquals("Nelson", persistePerson.getFirstName());
-        assertEquals("Piquet Souto", persistePerson.getLastName());
-        assertEquals("Brasilia - DF Brasil", persistePerson.getAddress());
-        assertEquals("Male", persistePerson.getGender());
+        assertEquals("Joshua Bloch", persisteBook.getAuthor());
+        assertEquals("Java Efetivo", persisteBook.getTitle());
+        assertEquals(86D, persisteBook.getPrice());
     }
 
     @Test
     @Order(3)
     public void testFindById() throws JsonMappingException, JsonProcessingException {
-        mockPerson();
+        mockBook();
 
-        PersonVO persistePerson = given().spec(specification)
+        BookVO persisteBook = given().spec(specification)
                 .config(RestAssuredConfig.config()
                         .encoderConfig(EncoderConfig
                                 .encoderConfig()
                                 .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
-                .contentType(TestConfigs.CONTENT_TYPE_YML)
-                .pathParams("id", person.getId())
+                .pathParams("id", book.getId())
                 .when()
                 .get("{id}")
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(PersonVO.class, objectMapper);
+                .as(BookVO.class, objectMapper);
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
 
-        person = persistePerson;
+        book = persisteBook;
 
-        assertNotNull(persistePerson);
-        assertNotNull(persistePerson.getId());
-        assertNotNull(persistePerson.getFirstName());
-        assertNotNull(persistePerson.getLastName());
-        assertNotNull(persistePerson.getAddress());
-        assertNotNull(persistePerson.getGender());
+        assertNotNull(persisteBook);
+        assertNotNull(persisteBook.getId());
+        assertNotNull(persisteBook.getAuthor());
+        assertNotNull(persisteBook.getLaunchDate());
+        assertNotNull(persisteBook.getTitle());
+        assertNotNull(persisteBook.getPrice());
 
-        assertTrue(persistePerson.getId() > 0);
+        assertTrue(persisteBook.getId() > 0);
 
-        assertEquals("Nelson", persistePerson.getFirstName());
-        assertEquals("Piquet Souto", persistePerson.getLastName());
-        assertEquals("Brasilia - DF Brasil", persistePerson.getAddress());
-        assertEquals("Male", persistePerson.getGender());
+        assertEquals("Joshua Bloch", persisteBook.getAuthor());
+        assertEquals("Java Efetivo", persisteBook.getTitle());
+        assertEquals(86D, persisteBook.getPrice());
     }
 
     @Test
@@ -207,8 +202,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                         .encoderConfig(EncoderConfig
                                 .encoderConfig()
                                 .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
-                .contentType(TestConfigs.CONTENT_TYPE_YML)
-                .pathParams("id", person.getId())
+                .pathParams("id", book.getId())
                 .when()
                 .delete("{id}")
                 .then()
@@ -232,40 +226,38 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(PersonVO[].class, objectMapper);
-
+                .as(BookVO[].class, objectMapper);
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
-        List<PersonVO> people = Arrays.asList(content);
-        PersonVO foundPersonOne = people.get(0);
+        List<BookVO> people = Arrays.asList(content);
+        BookVO foundBookOne = people.get(0);
 
-        assertNotNull(foundPersonOne.getId());
-        assertNotNull(foundPersonOne.getFirstName());
-        assertNotNull(foundPersonOne.getLastName());
-        assertNotNull(foundPersonOne.getAddress());
-        assertNotNull(foundPersonOne.getGender());
+        assertNotNull(foundBookOne.getId());
+        assertNotNull(foundBookOne.getLaunchDate());
+        assertNotNull(foundBookOne.getPrice());
+        assertNotNull(foundBookOne.getAuthor());
+        assertNotNull(foundBookOne.getTitle());
 
-        assertEquals(1, foundPersonOne.getId());
+        assertEquals(1, foundBookOne.getId());
 
-        assertEquals("Oscar", foundPersonOne.getFirstName());
-        assertEquals("Schmidt", foundPersonOne.getLastName());
-        assertEquals("São Paulo", foundPersonOne.getAddress());
-        assertEquals("Male", foundPersonOne.getGender());
+        assertEquals(49D, foundBookOne.getPrice());
+        assertEquals("Michael C. Feathers", foundBookOne.getAuthor());
+        assertEquals("Working effectively with legacy code", foundBookOne.getTitle());
 
-        PersonVO foundPersonTwo = people.get(2);
+        BookVO foundBookTwo = people.get(3);
 
-        assertNotNull(foundPersonTwo.getId());
-        assertNotNull(foundPersonTwo.getFirstName());
-        assertNotNull(foundPersonTwo.getLastName());
-        assertNotNull(foundPersonTwo.getAddress());
-        assertNotNull(foundPersonTwo.getGender());
+        assertNotNull(foundBookTwo.getId());
+        assertNotNull(foundBookTwo.getTitle());
+        assertNotNull(foundBookTwo.getAuthor());
+        assertNotNull(foundBookTwo.getPrice());
 
-        assertEquals(3, foundPersonTwo.getId());
 
-        assertEquals("Jhon", foundPersonTwo.getFirstName());
-        assertEquals("Wick", foundPersonTwo.getLastName());
-        assertEquals("Nova York", foundPersonTwo.getAddress());
-        assertEquals("Male", foundPersonTwo.getGender());
+        assertEquals(4, foundBookTwo.getId());
+
+        assertEquals("Crockford", foundBookTwo.getAuthor());
+        assertEquals(67D, foundBookTwo.getPrice());
+        assertEquals("JavaScript", foundBookTwo.getTitle());
+
     }
 
     @Test
@@ -273,7 +265,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
     public void testFindAllWithoutToken() throws JsonMappingException, JsonProcessingException {
 
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
-                .setBasePath("/api/person/v1")
+                .setBasePath("/api/book/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))//filtro para logar as requisições
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))//filtro para logar as respostas
@@ -284,7 +276,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                          .encoderConfig(EncoderConfig
                                  .encoderConfig()
                                  .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
-                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                 .contentType(TestConfigs.CONTENT_TYPE_YML)
                 .when()
                 .get()
                 .then()
@@ -292,11 +284,11 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                 
     }
 
-    private void mockPerson() {
-        person.setFirstName("Nelson");
-        person.setLastName("Piquet");
-        person.setAddress("Brasilia - DF Brasil");
-        person.setGender("Male");
+    private void mockBook() {
+        book.setAuthor("Joshua Bloch");
+        book.setLaunchDate(new Date());
+        book.setTitle("Java Efetivo");
+        book.setPrice(80D);
     }
 
 }
