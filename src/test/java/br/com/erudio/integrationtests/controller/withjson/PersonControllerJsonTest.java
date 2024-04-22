@@ -289,6 +289,46 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(7)
+    public void testFindByName() throws JsonMappingException, JsonProcessingException {
+
+        var content = given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .accept(TestConfigs.CONTENT_TYPE_JSON)
+                .pathParam("firstName", "ikol")
+                .queryParams("page",0, "size", 6, "directions", "asc")
+                .when()
+                .get("findPersonByName/{firstName}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
+                /*.as(new TypeRef<List<PersonVO>>() {
+                });*/
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
+        WrapperPersonVO wrapper = objectMapper.readValue(content, WrapperPersonVO.class);
+        var people = wrapper.getEmbedded().getPersons();
+        PersonVO foundPersonOne = people.get(0);
+
+        assertNotNull(foundPersonOne.getId());
+        assertNotNull(foundPersonOne.getFirstName());
+        assertNotNull(foundPersonOne.getLastName());
+        assertNotNull(foundPersonOne.getAddress());
+        assertNotNull(foundPersonOne.getGender());
+
+        assertEquals(9, foundPersonOne.getId());
+
+        assertEquals("Nikola", foundPersonOne.getFirstName());
+        assertEquals("Tesla", foundPersonOne.getLastName());
+        assertEquals("Smiljan - Croácia", foundPersonOne.getAddress());
+        assertEquals("Male", foundPersonOne.getGender());
+        assertTrue(foundPersonOne.getEnabled());
+
+
+    }
+
+    @Test
+    @Order(8)
     public void testFindAllWithoutToken() throws JsonMappingException, JsonProcessingException {
 
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
