@@ -2,7 +2,6 @@ package br.com.erudio.services;
 
 import br.com.erudio.controller.BookController;
 import br.com.erudio.data.vo.v1.BookVO;
-import br.com.erudio.data.vo.v1.PersonVO;
 import br.com.erudio.exceptions.RequiredObjectIsNullException;
 import br.com.erudio.exceptions.ResourceNotFoundException;
 import br.com.erudio.mapper.DozerMapper;
@@ -16,7 +15,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -47,6 +45,22 @@ public class BookSevices {
                         "asc")).withSelfRel();
 
         return assembler.toModel(bookVoPages, link);
+    }
+
+    public PagedModel<EntityModel<BookVO>> findBooksByTitle(String title, Pageable pageable){
+        logger.info("Finding Book by title");
+
+        var booksByTitle = bookRepository.findBooksByTitle(title, pageable);
+
+        var bookVOPage = booksByTitle.map(b -> DozerMapper.parseObject(b, BookVO.class));
+        bookVOPage.map(b -> b.add(linkTo(methodOn(BookController.class).findById(b.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(BookController.class)
+                .findAll(pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        "asc")).withSelfRel();
+
+        return assembler.toModel(bookVOPage, link);
     }
 
     public BookVO findById(Long id){
