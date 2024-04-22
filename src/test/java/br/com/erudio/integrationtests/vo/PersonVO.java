@@ -78,7 +78,7 @@ public class PersonVO extends RepresentationModel<PersonVO> implements Serializa
         this.gender = gender;
     }
 
-    public boolean isEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
