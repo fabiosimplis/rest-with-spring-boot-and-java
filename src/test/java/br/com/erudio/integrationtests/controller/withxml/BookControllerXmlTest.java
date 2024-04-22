@@ -249,6 +249,43 @@ public class BookControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(6)
+    public void testFindByTitle() throws JsonMappingException, JsonProcessingException {
+
+        var content = given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_XML)
+                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .pathParams("title","avas")
+                .queryParams("page",0, "size", 10, "directions", "asc")
+                .when()
+                .get("findBooksByTitle/{title}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().asString();
+                /*.as(new TypeRef<List<PersonVO>>() {
+                });*/
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
+        PagedModelBook wrapper = objectMapper.readValue(content, PagedModelBook.class);
+        var book = wrapper.getContent();
+        BookVO foundBookOne = book.getFirst();
+
+        assertNotNull(foundBookOne.getId());
+        assertNotNull(foundBookOne.getLaunchDate());
+        assertNotNull(foundBookOne.getPrice());
+        assertNotNull(foundBookOne.getAuthor());
+        assertNotNull(foundBookOne.getTitle());
+
+        assertEquals(4, foundBookOne.getId());
+
+        assertEquals(67.0, foundBookOne.getPrice());
+        assertEquals("Crockford", foundBookOne.getAuthor());
+        assertEquals("JavaScript", foundBookOne.getTitle());
+
+    }
+
+    @Test
+    @Order(7)
     public void testFindAllWithoutToken() throws JsonMappingException, JsonProcessingException {
 
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
