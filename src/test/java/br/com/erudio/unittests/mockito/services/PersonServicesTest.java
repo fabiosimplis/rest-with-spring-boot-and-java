@@ -173,7 +173,7 @@ public class PersonServicesTest {
 
         when(repository.findAll()).thenReturn(list);
 
-        var result = services.findAll();
+        var result = services.findAll(pageable);
 
         assertNotNull(result);
         assertEquals(14, result.size());
