@@ -200,6 +200,7 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
 
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .accept(TestConfigs.CONTENT_TYPE_JSON)
                 .queryParams("page",3, "size", 10, "directions", "asc")
                 .when()
                 .get()
@@ -212,8 +213,8 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
         WrapperBookVO wrapper = objectMapper.readValue(content, WrapperBookVO.class);
-        var people = wrapper.getEmbedded().getBook();
-        BookVO foundBookOne = people.get(0);
+        var book = wrapper.getEmbedded().getBook();
+        BookVO foundBookOne = book.get(0);
 
         assertNotNull(foundBookOne.getId());
         assertNotNull(foundBookOne.getLaunchDate());
@@ -227,7 +228,7 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
         assertEquals("Jimmy", foundBookOne.getAuthor());
         assertEquals("After the Wedding (Efter brylluppet)", foundBookOne.getTitle());
 
-        BookVO foundBookTwo = people.get(3);
+        BookVO foundBookTwo = book.get(3);
 
         assertNotNull(foundBookTwo.getId());
         assertNotNull(foundBookTwo.getTitle());
