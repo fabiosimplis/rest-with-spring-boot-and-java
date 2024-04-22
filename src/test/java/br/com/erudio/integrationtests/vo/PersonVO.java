@@ -22,6 +22,8 @@ public class PersonVO extends RepresentationModel<PersonVO> implements Serializa
     private String address;
 
     private String gender;
+
+    private boolean enabled;
     @JsonIgnore
     private Object links;
 
@@ -76,17 +78,25 @@ public class PersonVO extends RepresentationModel<PersonVO> implements Serializa
         this.gender = gender;
     }
 
+    public boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         PersonVO personVO = (PersonVO) o;
-        return Objects.equals(id, personVO.id) && Objects.equals(firstName, personVO.firstName) && Objects.equals(lastName, personVO.lastName) && Objects.equals(address, personVO.address) && Objects.equals(gender, personVO.gender);
+        return enabled == personVO.enabled && Objects.equals(id, personVO.id) && Objects.equals(firstName, personVO.firstName) && Objects.equals(lastName, personVO.lastName) && Objects.equals(address, personVO.address) && Objects.equals(gender, personVO.gender);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, firstName, lastName, address, gender);
+        return Objects.hash(super.hashCode(), id, firstName, lastName, address, gender, enabled);
     }
 }

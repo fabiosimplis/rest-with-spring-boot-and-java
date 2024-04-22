@@ -56,6 +56,28 @@ public class PersonServicesTest {
         assertEquals("First Name Test1", result.getFirstName());
         assertEquals("Last Name Test1", result.getLastName());
         assertEquals("Female", result.getGender());
+        assertTrue(result.isEnabled());
+
+    }
+
+    @Test
+    void testDisablePersonById() {
+        Person entity = input.mockEntity(1);
+        entity.setId(1L);
+        entity.setEnabled(false);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(entity));
+
+        var result = services.disablePerson(1L);
+        assertNotNull(result);
+        assertNotNull(result.getKey());
+        assertNotNull(result.getLinks());
+        assertTrue(result.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
+        assertEquals("Addres Test1", result.getAddress());
+        assertEquals("First Name Test1", result.getFirstName());
+        assertEquals("Last Name Test1", result.getLastName());
+        assertEquals("Female", result.getGender());
+        assertFalse(result.isEnabled());
 
     }
 
@@ -80,6 +102,7 @@ public class PersonServicesTest {
         assertEquals("First Name Test1", result.getFirstName());
         assertEquals("Last Name Test1", result.getLastName());
         assertEquals("Female", result.getGender());
+        assertTrue(result.isEnabled());
     }
 
     @Test
@@ -141,6 +164,7 @@ public class PersonServicesTest {
         assertEquals("First Name Test1", result.getFirstName());
         assertEquals("Last Name Test1", result.getLastName());
         assertEquals("Female", result.getGender());
+        assertTrue(result.isEnabled());
     }
 
     @Test
@@ -163,6 +187,7 @@ public class PersonServicesTest {
         assertEquals("First Name Test1", person1.getFirstName());
         assertEquals("Last Name Test1", person1.getLastName());
         assertEquals("Female", person1.getGender());
+        assertTrue(person1.isEnabled());
 
         var person4 = result.get(4);
         assertNotNull(person4);
@@ -173,6 +198,7 @@ public class PersonServicesTest {
         assertEquals("First Name Test4", person4.getFirstName());
         assertEquals("Last Name Test4", person4.getLastName());
         assertEquals("Male", person4.getGender());
+        assertTrue(person1.isEnabled());
 
         var person7 = result.get(7);
         assertNotNull(person7);
@@ -183,5 +209,6 @@ public class PersonServicesTest {
         assertEquals("First Name Test7", person7.getFirstName());
         assertEquals("Last Name Test7", person7.getLastName());
         assertEquals("Female", person7.getGender());
+        assertTrue(person1.isEnabled());
     }
 }

@@ -9,6 +9,7 @@ import br.com.erudio.mapper.DozerMapper;
 import br.com.erudio.mapper.custom.PersonMapper;
 import br.com.erudio.model.Person;
 import br.com.erudio.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -32,9 +33,6 @@ public class PersonSevices {
         logger.info("Finding a list of person");
 
         List<PersonVO> voList = DozerMapper.parseListObjects(personRepository.findAll(), PersonVO.class);
-
-//        for (PersonVO pVO: voList)
-//            pVO.add(linkTo(methodOn(PersonController.class).findById(pVO.getKey())).withSelfRel());
 
         voList.forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
@@ -82,6 +80,17 @@ public class PersonSevices {
 
         var vo = DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
+        return vo;
+    }
+
+    @Transactional
+    public PersonVO disablePerson(Long id){
+        logger.info("Disabling one person");
+        personRepository.disablePerson(id);
+        Person person = personRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No person found for this ID!"));
+        PersonVO vo = DozerMapper.parseObject(person, PersonVO.class);
+        //criando um endereço para ele mesmo
+        vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
         return vo;
     }
 
