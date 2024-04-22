@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.will;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -154,7 +153,7 @@ public class BookServicesTest {
 
         when(repository.findAll()).thenReturn(list);
 
-        var result = service.findAll();
+        var result = service.findAll(pageable);
 
         assertNotNull(result);
         assertEquals(14, result.size());
