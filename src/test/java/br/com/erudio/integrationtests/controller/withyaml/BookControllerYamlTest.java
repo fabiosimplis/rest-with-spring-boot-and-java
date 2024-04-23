@@ -266,7 +266,7 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testFindByTitle() throws JsonMappingException, JsonProcessingException {
 
         var wrapper = given().spec(specification)
@@ -327,6 +327,46 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(403);
                 
+    }
+
+    @Test
+    @Order(8)
+    public void testHATEOAS() throws JsonMappingException, JsonProcessingException {
+
+        var content = given().spec(specification)
+                .config(RestAssuredConfig.config()
+                        .encoderConfig(EncoderConfig
+                                .encoderConfig()
+                                .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .queryParams("page",3, "size", 10, "directions", "asc")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
+
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/book/v1/62\""));
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/book/v1/487\""));
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/book/v1/451\""));
+
+        assertTrue(content.contains("rel: \"first\"\n  href: \"http://localhost:8888/api/book/v1?direction=asc&page=0&size=10&sort=title,asc\""));
+        assertTrue(content.contains("rel: \"prev\"\n  href: \"http://localhost:8888/api/book/v1?direction=asc&page=2&size=10&sort=title,asc\""));
+        assertTrue(content.contains("rel: \"self\"\n  href: \"http://localhost:8888/api/book/v1?page=3&size=10&direction=asc\""));
+        assertTrue(content.contains("rel: \"next\"\n  href: \"http://localhost:8888/api/book/v1?direction=asc&page=4&size=10&sort=title,asc\""));
+        assertTrue(content.contains("rel: \"last\"\n  href: \"http://localhost:8888/api/book/v1?direction=asc&page=101&size=10&sort=title,asc\""));
+
+        assertTrue(content.contains("page:\n" +
+                "  size: 10\n" +
+                "  totalElements: 1015\n" +
+                "  totalPages: 102\n" +
+                "  number: 3"));
+
     }
 
     private void mockBook() {

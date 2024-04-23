@@ -14,11 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -170,49 +166,4 @@ public class PersonServicesTest {
         assertTrue(result.isEnabled());
     }
 
-    /*@Test
-    void testFindAll() {
-        List<Person> list = input.mockEntityList();
-
-        when(repository.findAll()).thenReturn(list);
-        Pageable pageable = PageRequest.of(0, 12, Sort.by("asc", "firstName"));
-        var result = services.findAll(pageable);
-        result.forEach();
-        assertNotNull(result);
-
-        assertEquals(14, result.size());
-
-        var person1 = result.get(1);
-        assertNotNull(person1);
-        assertNotNull(person1.getKey());
-        assertNotNull(person1.getLinks());
-        assertTrue(person1.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
-        assertEquals("Addres Test1", person1.getAddress());
-        assertEquals("First Name Test1", person1.getFirstName());
-        assertEquals("Last Name Test1", person1.getLastName());
-        assertEquals("Female", person1.getGender());
-        assertTrue(person1.isEnabled());
-
-        var person4 = result.get(4);
-        assertNotNull(person4);
-        assertNotNull(person4.getKey());
-        assertNotNull(person4.getLinks());
-        assertTrue(person4.toString().contains("links: [</api/person/v1/4>;rel=\"self\"]"));
-        assertEquals("Addres Test4", person4.getAddress());
-        assertEquals("First Name Test4", person4.getFirstName());
-        assertEquals("Last Name Test4", person4.getLastName());
-        assertEquals("Male", person4.getGender());
-        assertTrue(person1.isEnabled());
-
-        var person7 = result.get(7);
-        assertNotNull(person7);
-        assertNotNull(person7.getKey());
-        assertNotNull(person7.getLinks());
-        assertTrue(person7.toString().contains("links: [</api/person/v1/7>;rel=\"self\"]"));
-        assertEquals("Addres Test7", person7.getAddress());
-        assertEquals("First Name Test7", person7.getFirstName());
-        assertEquals("Last Name Test7", person7.getLastName());
-        assertEquals("Female", person7.getGender());
-        assertTrue(person1.isEnabled());
-    }*/
 }

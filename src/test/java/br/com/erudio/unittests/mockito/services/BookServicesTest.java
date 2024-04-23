@@ -15,11 +15,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 
@@ -147,45 +145,4 @@ public class BookServicesTest {
         assertEquals("Some Title1", result.getTitle());
     }
 
-    /*@Test
-    void testFindAll() {
-        List<Book> list = input.mockEntityList();
-
-        when(repository.findAll()).thenReturn(list);
-
-        var result = service.findAll(pageable);
-
-        assertNotNull(result);
-        assertEquals(14, result.size());
-
-        var book1 = result.get(1);
-        assertNotNull(book1);
-        assertNotNull(book1.getKey());
-        assertNotNull(book1.getLinks());
-        assertTrue(book1.toString().contains("links: [</api/book/v1/1>;rel=\"self\"]"));
-        assertEquals("Some Author1", book1.getAuthor());
-        assertNotNull(book1.getLaunchDate());
-        assertEquals(25D, book1.getPrice());
-        assertEquals("Some Title1", book1.getTitle());
-
-        var book4 = result.get(4);
-        assertNotNull(book4);
-        assertNotNull(book4.getKey());
-        assertNotNull(book4.getLinks());
-        assertTrue(book4.toString().contains("links: [</api/book/v1/4>;rel=\"self\"]"));
-        assertEquals("Some Author4", book4.getAuthor());
-        assertNotNull( book4.getLaunchDate());
-        assertEquals(25D, book4.getPrice());
-        assertEquals("Some Title4", book4.getTitle());
-
-        var book7 = result.get(7);
-        assertNotNull(book7);
-        assertNotNull(book7.getKey());
-        assertNotNull(book7.getLinks());
-        assertTrue(book7.toString().contains("links: [</api/book/v1/7>;rel=\"self\"]"));
-        assertEquals("Some Author7", book7.getAuthor());
-        assertNotNull( book7.getLaunchDate());
-        assertEquals(25D, book7.getPrice());
-        assertEquals("Some Title7", book7.getTitle());
-    }*/
 }
