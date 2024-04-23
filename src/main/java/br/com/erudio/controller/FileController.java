@@ -2,7 +2,6 @@ package br.com.erudio.controller;
 
 import br.com.erudio.data.vo.v1.UploadFileResponseVO;
 import br.com.erudio.services.FileStorageServices;
-import br.com.erudio.services.PersonSevices;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Tag(name = "File Endpoint")
 @RestController
@@ -32,5 +34,12 @@ public class FileController {
         String fileDownLoadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/file/v1/downloadFile/").path(filename).toUriString();
         return new UploadFileResponseVO(filename, fileDownLoadUri, file.getContentType(), file.getSize());
+    }
+
+    @PostMapping("/uploadMultipleFiles")
+    public List<UploadFileResponseVO> uploadMultipleFiles(@RequestParam("file") MultipartFile[] files){
+
+        //return Arrays.asList(files).stream().map(file -> uploadFile(file)).collect(Collectors.toCollection());
+        return Arrays.stream(files).map(this::uploadFile).collect(Collectors.toList());
     }
 }
