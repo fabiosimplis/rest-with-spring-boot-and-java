@@ -8,9 +8,13 @@ import br.com.erudio.mapper.DozerMapper;
 import br.com.erudio.model.Book;
 import br.com.erudio.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -24,15 +28,39 @@ public class BookSevices {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    PagedResourcesAssembler<BookVO> assembler;
 
-    public List<BookVO> findAll(){
+
+    public PagedModel<EntityModel<BookVO>> findAll(Pageable pageable){
         logger.info("Finding a list of book");
 
-        List<BookVO> voList = DozerMapper.parseListObjects(bookRepository.findAll(), BookVO.class);
+        var bookPages = bookRepository.findAll(pageable);
+        var bookVoPages = bookPages.map(b -> DozerMapper.parseObject(b, BookVO.class));
+        bookVoPages.map(bookVO -> bookVO.add(linkTo(methodOn(BookController.class).findById(bookVO.getKey())).withSelfRel()));
 
-        voList.forEach(p -> p.add(linkTo(methodOn(BookController.class).findById(p.getKey())).withSelfRel()));
+        Link link = linkTo(methodOn(BookController.class)
+                .findAll(pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        "asc")).withSelfRel();
 
-        return voList;
+        return assembler.toModel(bookVoPages, link);
+    }
+
+    public PagedModel<EntityModel<BookVO>> findBooksByTitle(String title, Pageable pageable){
+        logger.info("Finding Book by title");
+
+        var booksByTitle = bookRepository.findBooksByTitle(title, pageable);
+
+        var bookVOPage = booksByTitle.map(b -> DozerMapper.parseObject(b, BookVO.class));
+        bookVOPage.map(b -> b.add(linkTo(methodOn(BookController.class).findById(b.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(BookController.class)
+                .findAll(pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        "asc")).withSelfRel();
+
+        return assembler.toModel(bookVOPage, link);
     }
 
     public BookVO findById(Long id){

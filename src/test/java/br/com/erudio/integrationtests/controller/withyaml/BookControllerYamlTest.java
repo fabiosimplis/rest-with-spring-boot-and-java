@@ -7,6 +7,8 @@ import br.com.erudio.integrationtests.vo.AccountCredentialsVO;
 import br.com.erudio.integrationtests.vo.BookVO;
 import br.com.erudio.integrationtests.vo.PersonVO;
 import br.com.erudio.integrationtests.vo.TokenVO;
+import br.com.erudio.integrationtests.vo.pagedmodels.PagedModelBook;
+import br.com.erudio.integrationtests.vo.wrappers.WrapperBookVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -214,23 +216,26 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
     @Order(5)
     public void testFindAll() throws JsonMappingException, JsonProcessingException {
 
-        var content = given().spec(specification)
+        var wrapper = given().spec(specification)
                 .config(RestAssuredConfig.config()
                         .encoderConfig(EncoderConfig
                                 .encoderConfig()
                                 .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
                 .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .queryParams("page",3, "size", 10, "directions", "asc")
                 .when()
                 .get()
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(BookVO[].class, objectMapper);
+                .as(PagedModelBook.class, objectMapper);
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
-        List<BookVO> people = Arrays.asList(content);
-        BookVO foundBookOne = people.get(0);
+
+        var book = wrapper.getContent();
+        BookVO foundBookOne = book.get(0);
 
         assertNotNull(foundBookOne.getId());
         assertNotNull(foundBookOne.getLaunchDate());
@@ -238,13 +243,13 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(foundBookOne.getAuthor());
         assertNotNull(foundBookOne.getTitle());
 
-        assertEquals(1, foundBookOne.getId());
+        assertEquals(62, foundBookOne.getId());
 
-        assertEquals(49D, foundBookOne.getPrice());
-        assertEquals("Michael C. Feathers", foundBookOne.getAuthor());
-        assertEquals("Working effectively with legacy code", foundBookOne.getTitle());
+        assertEquals(168.97, foundBookOne.getPrice());
+        assertEquals("Jimmy", foundBookOne.getAuthor());
+        assertEquals("After the Wedding (Efter brylluppet)", foundBookOne.getTitle());
 
-        BookVO foundBookTwo = people.get(3);
+        BookVO foundBookTwo = book.get(3);
 
         assertNotNull(foundBookTwo.getId());
         assertNotNull(foundBookTwo.getTitle());
@@ -252,16 +257,56 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(foundBookTwo.getPrice());
 
 
-        assertEquals(4, foundBookTwo.getId());
+        assertEquals(841, foundBookTwo.getId());
 
-        assertEquals("Crockford", foundBookTwo.getAuthor());
-        assertEquals(67D, foundBookTwo.getPrice());
-        assertEquals("JavaScript", foundBookTwo.getTitle());
+        assertEquals("Nelson", foundBookTwo.getAuthor());
+        assertEquals(92.19, foundBookTwo.getPrice());
+        assertEquals("Air I Breathe, The", foundBookTwo.getTitle());
 
     }
 
     @Test
     @Order(6)
+    public void testFindByTitle() throws JsonMappingException, JsonProcessingException {
+
+        var wrapper = given().spec(specification)
+                .config(RestAssuredConfig.config()
+                        .encoderConfig(EncoderConfig
+                                .encoderConfig()
+                                .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .pathParams("title","avas")
+                .queryParams("page",0, "size", 10, "directions", "asc")
+                .when()
+                .get("findBooksByTitle/{title}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(PagedModelBook.class, objectMapper);
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
+
+        var book = wrapper.getContent();
+        BookVO foundBookOne = book.getFirst();
+
+        assertNotNull(foundBookOne.getId());
+        assertNotNull(foundBookOne.getLaunchDate());
+        assertNotNull(foundBookOne.getPrice());
+        assertNotNull(foundBookOne.getAuthor());
+        assertNotNull(foundBookOne.getTitle());
+
+        assertEquals(4, foundBookOne.getId());
+
+        assertEquals(67.0, foundBookOne.getPrice());
+        assertEquals("Crockford", foundBookOne.getAuthor());
+        assertEquals("JavaScript", foundBookOne.getTitle());
+
+    }
+
+    @Test
+    @Order(7)
     public void testFindAllWithoutToken() throws JsonMappingException, JsonProcessingException {
 
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
@@ -282,6 +327,46 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(403);
                 
+    }
+
+    @Test
+    @Order(8)
+    public void testHATEOAS() throws JsonMappingException, JsonProcessingException {
+
+        var content = given().spec(specification)
+                .config(RestAssuredConfig.config()
+                        .encoderConfig(EncoderConfig
+                                .encoderConfig()
+                                .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .queryParams("page",3, "size", 10, "directions", "asc")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
+
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/book/v1/62\""));
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/book/v1/487\""));
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/book/v1/451\""));
+
+        assertTrue(content.contains("rel: \"first\"\n  href: \"http://localhost:8888/api/book/v1?direction=asc&page=0&size=10&sort=title,asc\""));
+        assertTrue(content.contains("rel: \"prev\"\n  href: \"http://localhost:8888/api/book/v1?direction=asc&page=2&size=10&sort=title,asc\""));
+        assertTrue(content.contains("rel: \"self\"\n  href: \"http://localhost:8888/api/book/v1?page=3&size=10&direction=asc\""));
+        assertTrue(content.contains("rel: \"next\"\n  href: \"http://localhost:8888/api/book/v1?direction=asc&page=4&size=10&sort=title,asc\""));
+        assertTrue(content.contains("rel: \"last\"\n  href: \"http://localhost:8888/api/book/v1?direction=asc&page=101&size=10&sort=title,asc\""));
+
+        assertTrue(content.contains("page:\n" +
+                "  size: 10\n" +
+                "  totalElements: 1015\n" +
+                "  totalPages: 102\n" +
+                "  number: 3"));
+
     }
 
     private void mockBook() {

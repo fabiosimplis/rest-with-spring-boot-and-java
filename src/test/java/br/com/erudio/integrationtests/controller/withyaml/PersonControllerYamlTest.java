@@ -6,6 +6,8 @@ import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
 import br.com.erudio.integrationtests.vo.AccountCredentialsVO;
 import br.com.erudio.integrationtests.vo.PersonVO;
 import br.com.erudio.integrationtests.vo.TokenVO;
+import br.com.erudio.integrationtests.vo.pagedmodels.PagedModelPerson;
+import br.com.erudio.integrationtests.vo.wrappers.WrapperPersonVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -259,25 +261,29 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(6)
-    public void testFindAll() throws JsonMappingException, JsonProcessingException {
+    public void testFindByName() throws JsonMappingException, JsonProcessingException {
 
-        var content = given().spec(specification)
+        var wrapper = given().spec(specification)
                 .config(RestAssuredConfig.config()
                         .encoderConfig(EncoderConfig
                                 .encoderConfig()
                                 .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
                 .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .pathParam("firstName", "ikol")
+                .queryParams("page",0, "size", 10, "directions", "asc")
                 .when()
-                .get()
+                .get("findPersonByName/{firstName}")
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(PersonVO[].class, objectMapper);
+                .as(PagedModelPerson.class, objectMapper);
 
         // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
         // Convertemos para string para melhor realização dos testes
-        List<PersonVO> people = Arrays.asList(content);
+
+        var people = wrapper.getContent();
         PersonVO foundPersonOne = people.get(0);
 
         assertNotNull(foundPersonOne.getId());
@@ -285,14 +291,57 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(foundPersonOne.getLastName());
         assertNotNull(foundPersonOne.getAddress());
         assertNotNull(foundPersonOne.getGender());
+
+        assertEquals(9, foundPersonOne.getId());
+
+        assertEquals("Nikola", foundPersonOne.getFirstName());
+        assertEquals("Tesla", foundPersonOne.getLastName());
+        assertEquals("Smiljan - Croácia", foundPersonOne.getAddress());
+        assertEquals("Male", foundPersonOne.getGender());
         assertTrue(foundPersonOne.getEnabled());
 
-        assertEquals(1, foundPersonOne.getId());
 
-        assertEquals("Oscar", foundPersonOne.getFirstName());
-        assertEquals("Schmidt", foundPersonOne.getLastName());
-        assertEquals("São Paulo", foundPersonOne.getAddress());
-        assertEquals("Male", foundPersonOne.getGender());
+    }
+
+    @Test
+    @Order(7)
+    public void testFindAll() throws JsonMappingException, JsonProcessingException {
+
+        var wrapper = given().spec(specification)
+                .config(RestAssuredConfig.config()
+                        .encoderConfig(EncoderConfig
+                                .encoderConfig()
+                                .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .queryParams("page",3, "size", 10, "directions", "asc")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(PagedModelPerson.class, objectMapper);
+
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
+
+        var people = wrapper.getContent();
+        PersonVO foundPersonOne = people.get(0);
+
+        assertNotNull(foundPersonOne.getId());
+        assertNotNull(foundPersonOne.getFirstName());
+        assertNotNull(foundPersonOne.getLastName());
+        assertNotNull(foundPersonOne.getAddress());
+        assertNotNull(foundPersonOne.getGender());
+
+        assertEquals(207, foundPersonOne.getId());
+
+        assertEquals("Alie", foundPersonOne.getFirstName());
+        assertEquals("Simpkins", foundPersonOne.getLastName());
+        assertEquals("9613 Forster Trail", foundPersonOne.getAddress());
+        assertEquals("Female", foundPersonOne.getGender());
+        assertFalse(foundPersonOne.getEnabled());
 
         PersonVO foundPersonTwo = people.get(2);
 
@@ -303,16 +352,16 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(foundPersonTwo.getGender());
         assertTrue(foundPersonTwo.getEnabled());
 
-        assertEquals(3, foundPersonTwo.getId());
+        assertEquals(11, foundPersonTwo.getId());
 
-        assertEquals("Jhon", foundPersonTwo.getFirstName());
-        assertEquals("Wick", foundPersonTwo.getLastName());
-        assertEquals("Nova York", foundPersonTwo.getAddress());
-        assertEquals("Male", foundPersonTwo.getGender());
+        assertEquals("Alisa", foundPersonTwo.getFirstName());
+        assertEquals("Szwandt", foundPersonTwo.getLastName());
+        assertEquals("8 Moose Place", foundPersonTwo.getAddress());
+        assertEquals("Female", foundPersonTwo.getGender());
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void testFindAllWithoutToken() throws JsonMappingException, JsonProcessingException {
 
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
@@ -333,6 +382,49 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(403);
                 
+    }
+
+    @Test
+    @Order(9)
+    public void testHATEOAS() throws JsonMappingException, JsonProcessingException {
+
+        var content = given().spec(specification)
+                .config(RestAssuredConfig.config()
+                        .encoderConfig(EncoderConfig
+                                .encoderConfig()
+                                .encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
+                .contentType(TestConfigs.CONTENT_TYPE_YML)
+                .accept(TestConfigs.CONTENT_TYPE_YML)
+                .queryParams("page",3, "size", 10, "directions", "asc")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+                /*.as(new TypeRef<List<PersonVO>>() {
+                });*/
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
+
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/person/v1/207\""));
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/person/v1/663\""));
+        assertTrue(content.contains("rel: \"self\"\n    href: \"http://localhost:8888/api/person/v1/11\""));
+
+
+
+        assertTrue(content.contains("rel: \"first\"\n  href: \"http://localhost:8888/api/person/v1?direction=asc&page=0&size=10&sort=firstName,asc\""));
+        assertTrue(content.contains("rel: \"prev\"\n  href: \"http://localhost:8888/api/person/v1?direction=asc&page=2&size=10&sort=firstName,asc\""));
+        assertTrue(content.contains("rel: \"self\"\n  href: \"http://localhost:8888/api/person/v1?page=3&size=10&direction=asc\""));
+        assertTrue(content.contains("rel: \"next\"\n  href: \"http://localhost:8888/api/person/v1?direction=asc&page=4&size=10&sort=firstName,asc\""));
+        assertTrue(content.contains("rel: \"last\"\n  href: \"http://localhost:8888/api/person/v1?direction=asc&page=100&size=10&sort=firstName,asc\""));
+
+        assertTrue(content.contains("page:\n" +
+                "  size: 10\n" +
+                "  totalElements: 1009\n" +
+                "  totalPages: 101\n" +
+                "  number: 3"));
     }
 
     private void mockPerson() {
