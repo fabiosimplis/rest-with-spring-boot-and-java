@@ -1,9 +1,6 @@
 package br.com.erudio.integrationtests.repositories;
 
-import br.com.erudio.configs.TestConfigs;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
-import br.com.erudio.integrationtests.vo.BookVO;
-import br.com.erudio.integrationtests.vo.wrappers.WrapperBookVO;
 import br.com.erudio.model.Book;
 import br.com.erudio.repositories.BookRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -44,7 +40,7 @@ public class BookRepositoryTest extends AbstractIntegrationTest {
 
         Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "title"));
 
-        Book book = repository.findBooksByTitle("avas", pageable).getContent().getFirst();
+        Book book = repository.findBooksByTitle("avas", pageable).getContent().get(0);
 
         assertNotNull(book.getId());
         assertNotNull(book.getLaunchDate());

@@ -265,7 +265,7 @@ public class BookControllerXmlTest extends AbstractIntegrationTest {
         // Convertemos para string para melhor realização dos testes
         PagedModelBook wrapper = objectMapper.readValue(content, PagedModelBook.class);
         var book = wrapper.getContent();
-        BookVO foundBookOne = book.getFirst();
+        BookVO foundBookOne = book.get(0);
 
         assertNotNull(foundBookOne.getId());
         assertNotNull(foundBookOne.getLaunchDate());

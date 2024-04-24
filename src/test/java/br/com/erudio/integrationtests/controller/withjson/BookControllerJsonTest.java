@@ -265,7 +265,7 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
         // Convertemos para string para melhor realização dos testes
         WrapperBookVO wrapper = objectMapper.readValue(content, WrapperBookVO.class);
         var book = wrapper.getEmbedded().getBook();
-        BookVO foundBookOne = book.getFirst();
+        BookVO foundBookOne = book.get(0);
 
         assertNotNull(foundBookOne.getId());
         assertNotNull(foundBookOne.getLaunchDate());

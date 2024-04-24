@@ -289,7 +289,7 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
         // Convertemos para string para melhor realização dos testes
 
         var book = wrapper.getContent();
-        BookVO foundBookOne = book.getFirst();
+        BookVO foundBookOne = book.get(0);
 
         assertNotNull(foundBookOne.getId());
         assertNotNull(foundBookOne.getLaunchDate());
