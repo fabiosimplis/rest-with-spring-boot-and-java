@@ -234,6 +234,28 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(6)
+    public void testFindByIdDeletedPerson() throws JsonMappingException, JsonProcessingException {
+        mockPerson();
+
+        var content = given().spec(specification)
+                .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .header(TestConfigs.HEADER_PARAM_ORIGIN, ORIGIN_ERUDIO)
+                .pathParams("id", person.getId())
+                .when()
+                .get("{id}")
+                .then()
+                .statusCode(404)
+                .extract()
+                .body()
+                .asString();
+        // Como o restassured usa uma abstração sobre objectmapper do Jackson ocorre um erro
+        // Convertemos para string para melhor realização dos testes
+
+
+    }
+
+    @Test
+    @Order(7)
     public void testFindAll() throws JsonMappingException, JsonProcessingException {
 
         var content = given().spec(specification)
@@ -287,7 +309,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void testFindByName() throws JsonMappingException, JsonProcessingException {
 
         var content = given().spec(specification)
@@ -327,7 +349,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     public void testFindAllWithoutToken() throws JsonMappingException, JsonProcessingException {
 
         RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
@@ -347,7 +369,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     public void testHATEOAS() throws JsonMappingException, JsonProcessingException {
 
         var content = given().spec(specification)
@@ -376,7 +398,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertTrue(content.contains("\"next\":{\"href\":\"http://localhost:8888/api/person/v1?direction=asc&page=4&size=10&sort=firstName,asc\"}"));
         assertTrue(content.contains("\"last\":{\"href\":\"http://localhost:8888/api/person/v1?direction=asc&page=100&size=10&sort=firstName,asc\"}}"));
 
-        //assertTrue(content.contains("\"page\":{\"size\":10,\"totalElements\":1009,\"totalPages\":101,\"number\":3}"));
+        assertTrue(content.contains("\"page\":{\"size\":10,\"totalElements\":1009,\"totalPages\":101,\"number\":3}"));
     }
 
     private void mockPerson() {
