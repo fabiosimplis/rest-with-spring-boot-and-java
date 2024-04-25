@@ -18,6 +18,7 @@
         <springdoc.version>2.0.2</springdoc.version>
         <testcontainer.version>1.16.3</testcontainer.version>
         <java-jwt.version>3.18.3</java-jwt.version>
+        <maven.compiler.source>17</maven.compiler.source>
     </properties>
     <dependencies>
 

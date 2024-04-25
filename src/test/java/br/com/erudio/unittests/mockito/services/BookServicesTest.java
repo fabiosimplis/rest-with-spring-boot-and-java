@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +70,7 @@ public class BookServicesTest {
         BookVO vo = input.mockVO(1);
         vo.setKey(1L);
 
-        when(repository.save(entity)).thenReturn(entity);
+        when(repository.save(any(Book.class))).thenReturn(entity);
 
         var result = service.create(vo);
 
