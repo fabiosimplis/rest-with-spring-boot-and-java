@@ -1,6 +1,8 @@
 # Projeto para estudo Spring Boot RestFull
 [![NPM](https://img.shields.io/npm/l/react)](https://github.com/fabiosimplis/DEV-dscommerce-back-end/blob/main/LICENSE) 
 
+[![Java CI with Maven](https://github.com/fabiosimplis/rest-with-spring-boot-and-java/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/fabiosimplis/rest-with-spring-boot-and-java/actions/workflows/continuous-integration.yml)
+
 # Sobre o projeto
 
 Projeto simples de Para catalogar Pessoas e Livros
